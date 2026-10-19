@@ -1,0 +1,19 @@
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Local AWS state (raw, unmasked). Masked copies go to project/evidence/.
+project/starter/agentcore_config.json
+project/starter/output_eval_dataset.jsonl
+
+# Secrets
+.env
+*.pem
