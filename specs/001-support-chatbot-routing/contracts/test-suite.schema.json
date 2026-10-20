@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "harness-tests.schema.json",
+  "title": "Harness test suite",
+  "description": "Schema for project/starter/harness-tests.json. generate-eval-dataset.py reads only id/prompt/expected; 'route' is an additive tag used by validate_offline.py.",
+  "type": "object",
+  "required": ["tests"],
+  "additionalProperties": false,
+  "properties": {
+    "tests": {
+      "type": "array",
+      "minItems": 18,
+      "items": {
+        "type": "object",
+        "required": ["id", "route", "prompt", "expected"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z]+(_[a-z0-9]+)+$"},
+          "route": {"enum": ["bug", "faq", "faq_miss", "faq_ext", "other", "edge", "injection"]},
+          "prompt": {"type": "string", "minLength": 1},
+          "expected": {"type": "string", "minLength": 20}
+        }
+      }
+    }
+  }
+}

@@ -290,7 +290,6 @@ entries, a completed evaluation job, and an observations document citing scores.
   rubric requires the FAQ to be embedded through the placeholder.
 - The repository owner runs every cloud-mutating command with their own credentials in the
   required region; evidence files are committed with the account ID masked.
-- The guardrail (FR-017) is applied if the managed harness supports attaching one; if it does
-  not, it is applied in the client invocation path or documented as a manual step — determined
-  during planning.
+- The managed harness has no native guardrail parameter, so the guardrail (FR-017) is applied
+  in the client invocation path before the harness is called, as an opt-in (see research R1).
 - Repository artifacts are written in English to match the course rubric.
