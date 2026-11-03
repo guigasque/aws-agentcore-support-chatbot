@@ -1,0 +1,9 @@
+Connected to harness support_chatbot (session 0f816e2e-6731-4489-8e08-dc1d1916d5a6-support-chat).
+Type a message, or 'quit' to exit.
+
+you> Do you ship drones with lithium batteries to Antarctica?
+bot> <thinking>The question about shipping drones with lithium batteries to Antarctica is a policy question, which falls under PLATFORM_QUESTION. The FAQ does not cover specific shipping restrictions for items like drones with lithium batteries to Antarctica. Therefore, I will provide a generic response and direct the customer to contact support for detailed information.</thinking>
+
+I'm sorry, but I don't have specific information about shipping drones with lithium batteries to Antarctica. For detailed shipping policies and restrictions, please contact our support team at +1 (800) 555-0199, Monday–Friday (excluding holidays).
+
+you> quit

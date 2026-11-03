@@ -1,0 +1,30 @@
+name: offline-gates
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: project/starter/requirements*.txt
+      - name: Install dependencies
+        run: pip install -r project/starter/requirements-dev.txt
+      - name: Offline validator
+        working-directory: project/starter
+        run: python validate_offline.py
+      - name: Unit tests
+        run: python -m pytest project/tests -q

@@ -55,11 +55,15 @@ def invoke_harness_once(
             "config": {"agentCoreGateway": {"gatewayArn": gateway_arn}},
         }]
 
+    # Session ids must be >= 33 characters; a fresh one per test case
+    # keeps every test independent.
+    session_id = f"{uuid.uuid4()}-evalcase"
     response = rt.invoke_harness(
         harnessArn=harness_arn,
-        # Session ids must be >= 33 characters; a fresh one per test case
-        # keeps every test independent.
-        runtimeSessionId=f"{uuid.uuid4()}-evalcase",
+        runtimeSessionId=session_id,
+        # One actor per test case, so the harness's long-term memory cannot
+        # carry facts from one test (or chat session) into another.
+        actorId=session_id,
         # Pin the model explicitly — never rely on the harness default.
         model={"bedrockModelConfig": {"modelId": model_id}},
         tools=tools,
@@ -105,6 +109,10 @@ def main():
                    help="Where to write the eval dataset JSONL.")
     p.add_argument("--region", default=None,
                    help="AWS region (default: from config file, else us-east-1).")
+    p.add_argument("--guardrail", action="store_true",
+                   help="Check each prompt with the Bedrock Guardrail recorded by "
+                        "setup_guardrail.py; blocked prompts record the guardrail's "
+                        "message as the response and skip the harness.")
     args = p.parse_args()
 
     # ARNs come from agentcore_config.json unless overridden on the CLI.
@@ -127,6 +135,16 @@ def main():
         config=Config(read_timeout=300, retries={"max_attempts": 1}),
     )
 
+    guard = None
+    if args.guardrail:
+        from guardrail import check_input, load_guardrail
+        guardrail_ids = load_guardrail(config)
+        if guardrail_ids is None:
+            sys.exit("No guardrail in config — deploy cloudformation-guardrail.yaml "
+                     "and run setup_guardrail.py first.")
+        guard = (boto3.client("bedrock-runtime", region_name=region),
+                 guardrail_ids, check_input)
+
     out_path = Path(args.out_jsonl)
     n_ok = 0
 
@@ -136,21 +154,38 @@ def main():
             reference = t.get("expected", "")
             prompt = t.get("prompt", "")
 
-            try:
-                result = invoke_harness_once(
-                    rt=rt,
-                    harness_arn=harness_arn,
-                    gateway_arn=gateway_arn,
-                    model_id=args.model_id,
-                    prompt=prompt,
-                )
-                response_text = result["final_output_text"]
-                n_ok += 1
-            except Exception as e:
-                # If the harness errors, still emit a record so the eval
-                # run captures failures.
-                print(e, file=sys.stderr)
-                response_text = f"[HARNESS_ERROR] {type(e).__name__}: {e}"
+            blocked_message = None
+            if guard:
+                runtime, (guardrail_id, guardrail_version), check_input = guard
+                try:
+                    result = check_input(runtime, guardrail_id, guardrail_version, prompt)
+                    if result.blocked:
+                        blocked_message = result.message or ""
+                except Exception as e:
+                    # Fail closed: never call the harness with an unchecked prompt.
+                    print(e, file=sys.stderr)
+                    blocked_message = f"[HARNESS_ERROR] GuardrailCheckFailed: {e}"
+
+            if blocked_message is not None:
+                response_text = blocked_message
+                if not blocked_message.startswith("[HARNESS_ERROR]"):
+                    print(f"{test_id}: blocked by guardrail", file=sys.stderr)
+            else:
+                try:
+                    result = invoke_harness_once(
+                        rt=rt,
+                        harness_arn=harness_arn,
+                        gateway_arn=gateway_arn,
+                        model_id=args.model_id,
+                        prompt=prompt,
+                    )
+                    response_text = result["final_output_text"]
+                    n_ok += 1
+                except Exception as e:
+                    # If the harness errors, still emit a record so the eval
+                    # run captures failures.
+                    print(e, file=sys.stderr)
+                    response_text = f"[HARNESS_ERROR] {type(e).__name__}: {e}"
 
             # Bedrock Evaluations LLM-as-a-judge (BYOI) input JSONL record
             record = {

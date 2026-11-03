@@ -1,0 +1,8 @@
+Connected to harness support_chatbot (session bae52da7-8bc7-4eaf-ae27-5b8b93f2afb0-support-chat).
+Type a message, or 'quit' to exit.
+
+you> How long do I have to return an item?
+bot> 
+<thinking>The user is asking about the return policy, which is covered by FAQ entry 11.</thinking> You can return most items within 30 days of delivery as long as they're unused and in their original packaging (unless the item arrived defective).
+
+you> you> quit

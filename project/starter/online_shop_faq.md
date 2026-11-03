@@ -80,6 +80,9 @@ Enter the code at checkout in the promo/discount field and apply it before payin
 22) Can I get an invoice/receipt?
 A receipt is emailed after purchase. If you need an invoice with company details (e.g., VAT), contact support with your order number and billing information.
 
+34) Do you sell gift cards?
+Not currently. We don’t sell gift cards or gift vouchers. Promotions are offered as promo codes, which you enter at checkout in the promo/discount field.
+
 ⸻
 
 Products & Stock
@@ -111,6 +114,9 @@ Use the help/contact form on our site (recommended) or reply to any order email.
 
 30) What are your support hours and response times?
 Support is available Monday–Friday (excluding holidays). We typically respond within 1–2 business days; urgent shipping/return issues are prioritized.
+
+33) What is the customer support phone number?
+Call +1 (800) 555-0199. Phone support is available Monday–Friday (excluding holidays), during the same support hours as our other channels.
 
 ⸻
 

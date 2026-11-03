@@ -1,0 +1,60 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  Amazon Bedrock Guardrail for the support chatbot. Applied client-side with
+  ApplyGuardrail (python chat.py --guardrail) before the harness is invoked.
+  Deploy as stack bug-report-guardrail-stack, then run setup_guardrail.py.
+
+Resources:
+
+  SupportChatbotGuardrail:
+    Type: AWS::Bedrock::Guardrail
+    Properties:
+      Name: !Sub ${AWS::StackName}-guardrail
+      Description: Blocks harmful content and prompt attacks in customer messages.
+      BlockedInputMessaging: >-
+        Sorry, I can't help with that message. I can help you report a problem
+        with our website or app, or answer questions about orders, shipping,
+        returns and payments. For anything else, please call +1 (800) 555-0199,
+        Monday–Friday (excluding holidays).
+      BlockedOutputsMessaging: >-
+        Sorry, I can't share that response. For help, please call our support
+        team at +1 (800) 555-0199, Monday–Friday (excluding holidays).
+      # Managed content filters only. No denied topics or word filters, to
+      # avoid blocking legitimate bug reports and FAQ questions.
+      ContentPolicyConfig:
+        FiltersConfig:
+          - Type: HATE
+            InputStrength: HIGH
+            OutputStrength: HIGH
+          - Type: INSULTS
+            InputStrength: HIGH
+            OutputStrength: HIGH
+          - Type: SEXUAL
+            InputStrength: HIGH
+            OutputStrength: HIGH
+          - Type: VIOLENCE
+            InputStrength: HIGH
+            OutputStrength: HIGH
+          - Type: MISCONDUCT
+            InputStrength: HIGH
+            OutputStrength: HIGH
+          # Prompt-attack filtering applies to input only; AWS requires NONE
+          # for the output strength.
+          - Type: PROMPT_ATTACK
+            InputStrength: HIGH
+            OutputStrength: NONE
+
+  SupportChatbotGuardrailVersion:
+    Type: AWS::Bedrock::GuardrailVersion
+    Properties:
+      GuardrailIdentifier: !GetAtt SupportChatbotGuardrail.GuardrailId
+      Description: Version used by chat.py --guardrail and generate-eval-dataset.py --guardrail.
+
+Outputs:
+  GuardrailId:
+    Description: Guardrail ID passed to ApplyGuardrail
+    Value: !GetAtt SupportChatbotGuardrail.GuardrailId
+
+  GuardrailVersion:
+    Description: Numbered guardrail version passed to ApplyGuardrail
+    Value: !GetAtt SupportChatbotGuardrailVersion.Version

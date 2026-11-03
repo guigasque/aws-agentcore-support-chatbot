@@ -44,6 +44,10 @@ def invoke(rt, config, session_id, user_text, verbose=False):
     response = rt.invoke_harness(
         harnessArn=config["harness_arn"],
         runtimeSessionId=session_id,
+        # One actor per conversation. The harness's managed memory stores
+        # long-term facts per actor; without this every session shares the
+        # "default" actor and recalls other customers' bug details and tickets.
+        actorId=session_id,
         # Pin the model on every invoke as well (belt and suspenders —
         # create_harness.py already pinned it on the harness).
         model={"bedrockModelConfig": {"modelId": config.get("model_id", "us.amazon.nova-pro-v1:0")}},
@@ -86,11 +90,24 @@ def main():
                         help="Config file written by the setup scripts.")
     parser.add_argument("--verbose", action="store_true",
                         help="Print every raw stream event (for debugging).")
+    parser.add_argument("--guardrail", action="store_true",
+                        help="Check each message with the Bedrock Guardrail recorded "
+                             "by setup_guardrail.py before calling the harness.")
     args = parser.parse_args()
 
     config = json.loads(Path(args.config).read_text(encoding="utf-8"))
     if "harness_arn" not in config:
         sys.exit("No harness in config yet — run create_harness.py first.")
+
+    guard = None
+    if args.guardrail:
+        from guardrail import check_input, load_guardrail
+        guardrail_ids = load_guardrail(config)
+        if guardrail_ids is None:
+            sys.exit("No guardrail in config — deploy cloudformation-guardrail.yaml "
+                     "and run setup_guardrail.py first.")
+        guard = (boto3.client("bedrock-runtime", region_name=config["region"]),
+                 guardrail_ids, check_input)
 
     # Session ids must be at least 33 characters — a UUID plus a suffix.
     session_id = f"{uuid.uuid4()}-support-chat"
@@ -117,6 +134,16 @@ def main():
         if user_text.lower() in ("quit", "exit"):
             break
         print("bot> ", end="", flush=True)
+        if guard:
+            runtime, (guardrail_id, guardrail_version), check_input = guard
+            try:
+                result = check_input(runtime, guardrail_id, guardrail_version, user_text)
+            except Exception as exc:  # noqa: BLE001 - fail closed, show the error
+                print(f"[guardrail error] {exc} — message not sent.\n")
+                continue
+            if result.blocked:
+                print(f"[guardrail blocked] {result.message}\n")
+                continue
         invoke(rt, config, session_id, user_text, verbose=args.verbose)
         print()
 
