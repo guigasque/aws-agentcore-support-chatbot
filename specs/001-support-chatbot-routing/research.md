@@ -175,7 +175,10 @@ leftover comments, missing routes) without needing AWS credentials.
 
 ## R11. Language & runtime versions
 
-**Decision**: Python ≥ 3.9 (the course minimum), developed and tested locally on 3.13 and in CI
-on 3.9 and 3.12. Runtime dependencies stay pinned in `requirements.txt` (`boto3==1.43.76`).
+**Decision**: Python ≥ 3.10, developed and tested locally on 3.13 and in CI on 3.10 and 3.12.
+The course brief says 3.9, but the pinned `boto3==1.43.76` declares `Requires-Python >= 3.10`,
+so 3.9 cannot install the dependencies. CI runs in `python:<version>-slim` containers because
+the Ubuntu 26.04 runner image has no 3.9 build for `actions/setup-python`. Runtime dependencies
+stay pinned in `requirements.txt` (`boto3==1.43.76`).
 Dev dependencies go in a new `requirements-dev.txt` (`pytest`). The Lambda stays on
 `python3.12` (unchanged).

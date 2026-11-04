@@ -44,7 +44,7 @@ project/evidence/               Rubric evidence (see project/evidence/README.md)
 - An AWS account with Amazon Bedrock and AgentCore access in **us-east-1**, with Amazon Nova Pro
   (`us.amazon.nova-pro-v1:0`) enabled.
 - AWS CLI v2 configured: `aws sts get-caller-identity` must succeed.
-- Python 3.9 or newer.
+- Python 3.10 or newer (the pinned `boto3==1.43.76` requires it).
 
 ### Lab credentials (`.env`)
 

@@ -1,5 +1,12 @@
 <!--
 Sync Impact Report
+- Version change: 1.0.0 → 1.0.1 (PATCH: clarification)
+- Changed: Platform & Security Constraints — minimum Python 3.9 → 3.10, because the pinned
+  boto3 1.43.76 requires Python >= 3.10
+- Templates requiring updates: none
+- Deferred TODOs: none
+
+Previous report (1.0.0)
 - Version change: (template) → 1.0.0
 - Principles defined: I. The Prompt Is the Product; II. Exactly One Route;
   III. Grounded Answers Only; IV. Complete Before Calling; V. Injection-Resistant by Default;
@@ -90,7 +97,8 @@ prompt quality.
 - Region MUST be `us-east-1` for every resource, script and command.
 - Model MUST be pinned to `us.amazon.nova-pro-v1:0` (harness and invokes); the evaluator model
   is `amazon.nova-pro-v1:0`. The harness default model MUST NOT be relied upon.
-- Python 3.9+ with `boto3`/`botocore` 1.43.76+ as pinned in `requirements.txt`.
+- Python 3.10+ with `boto3`/`botocore` 1.43.76+ as pinned in `requirements.txt` (boto3 1.43.x
+  requires Python ≥ 3.10).
 - Gateway target name MUST be `bugreports` (letters, digits, underscores only).
 - Stack names MUST remain `bug-report-tool-stack` and `bug-report-testing-stack`.
 - AWS credentials, access keys and session tokens MUST NEVER be committed. Evidence files that
@@ -122,4 +130,4 @@ version bump (MAJOR: principle removed or redefined; MINOR: principle or section
 PATCH: clarification). Compliance is reviewed at `/speckit-analyze` time and before submission.
 Runtime guidance for contributors lives in `README.md`.
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-10-19
+**Version**: 1.0.1 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-11-04

@@ -26,7 +26,8 @@ is reused unchanged except for an opt-in `--guardrail` flag. Additive tooling pr
 
 ## Technical Context
 
-**Language/Version**: Python ≥ 3.9 (local 3.13; CI matrix 3.9 and 3.12); Lambda on `python3.12`
+**Language/Version**: Python ≥ 3.10, the minimum for the pinned `boto3==1.43.76` (local 3.13;
+CI matrix 3.10 and 3.12); Lambda on `python3.12`
 (unchanged)
 
 **Primary Dependencies**: `boto3`/`botocore` 1.43.76 (pinned); `pytest` (dev only)

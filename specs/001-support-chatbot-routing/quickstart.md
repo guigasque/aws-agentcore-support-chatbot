@@ -8,7 +8,7 @@ Runnable scenarios that prove the feature works end to end. Run every command fr
 
 - AWS account with Bedrock and AgentCore access, and Nova Pro (`us.amazon.nova-pro-v1:0`)
   enabled in `us-east-1`
-- AWS CLI configured (`aws sts get-caller-identity` works); Python ≥ 3.9
+- AWS CLI configured (`aws sts get-caller-identity` works); Python ≥ 3.10
 
 ```bash
 python3 -m venv venv && source venv/bin/activate

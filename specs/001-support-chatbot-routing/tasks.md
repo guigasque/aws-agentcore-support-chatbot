@@ -22,7 +22,7 @@ constitution (offline gates). Offline tests are written before the code they cov
 
 - [X] T001 Create `project/starter/requirements-dev.txt` with `-r requirements.txt` and `pytest>=8`
 - [X] T002 Create `project/tests/conftest.py` that adds `project/starter/` to `sys.path` and exposes a `load_module(name, filename)` helper using `importlib.util` (needed for the hyphenated `generate-eval-dataset.py`)
-- [X] T003 [P] Create `.github/workflows/ci.yml`: on push/PR, Python matrix 3.9 and 3.12, install `project/starter/requirements-dev.txt`, run `python validate_offline.py` (working dir `project/starter`) and `python -m pytest project/tests -q`
+- [X] T003 [P] Create `.github/workflows/ci.yml`: on push/PR, Python matrix 3.10 and 3.12 (in `python:<version>-slim` containers), install `project/starter/requirements-dev.txt`, run `python validate_offline.py` (working dir `project/starter`) and `python -m pytest project/tests -q`
 - [X] T004 [P] Create `project/evidence/README.md` (an evidence index that maps every rubric evidence item to a file path, marked TODO until produced) and `project/evidence/transcripts/.gitkeep`
 
 ---
