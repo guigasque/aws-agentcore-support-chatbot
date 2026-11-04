@@ -15,6 +15,7 @@ routes each customer message to one of three behaviors:
 
 There is no separate classifier: routing, collection and grounding all come from the prompt.
 An optional Bedrock Guardrail checks customer messages before they reach the harness.
+For a step-by-step explanation, see [docs/how-it-works.md](docs/how-it-works.md).
 
 ## Repository layout
 
